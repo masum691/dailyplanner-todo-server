@@ -1,11 +1,11 @@
 crud - create, read, update, delete
 ------------------------------------------------------------
 
-create = insertOne, insertMany = POST
+create = insertOne, insertMany = post
 
 * server side
 -------------
-app.post('./list', async(req, res) => {
+app.post('/mytodo', async(req, res) => {
             const newList = req.body;
             const result = await todoCollection.insertOne(newList)
             res.json(result)
@@ -16,10 +16,43 @@ app.post('./list', async(req, res) => {
 get chara onno kicu hole take method bole dite hoy, like 'POST' 
 
 fetch('http://localhost:5000/list', {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(newUser)
-            
-        })
+    method: 'POST',
+    headers: {
+        'content-type': 'application/json'
+    },
+    body: JSON.stringify(newUser)
+    })
+
+----------------------------------------------------------------
+
+read = findOne, findMany = get
+
+// get api
+* server side 
+-------------
+app.get('/mytodo', async(req, res) => {
+    const cursor = todoCollection.find({})
+    const todo = await cursor.toArray();
+    res.send(todo);
+    })
+
+* client side 
+-------------
+const [lists, setLists] = useState([]);
+useEffect( () => {
+    fetch('http://localhost:5000/mytodo')
+    .then(res => res.json())
+    .then(data => setLists(data))
+}, [])
+--------------------------------------------------------------
+
+update = 
+
+--------------------------------------------------------------
+
+delete = deleteOne , deleteMany = delete
+
+* ObjectId
+const ObjectId = require('mongodb').ObjectId;
+
+method: 'DELETE' dilei hobe jodi body te information na dewa hoy
