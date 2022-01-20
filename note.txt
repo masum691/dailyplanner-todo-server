@@ -1,0 +1,25 @@
+crud - create, read, update, delete
+------------------------------------------------------------
+
+create = insertOne, insertMany = POST
+
+* server side
+-------------
+app.post('./list', async(req, res) => {
+            const newList = req.body;
+            const result = await todoCollection.insertOne(newList)
+            res.json(result)
+        })
+
+* client side
+-------------
+get chara onno kicu hole take method bole dite hoy, like 'POST' 
+
+fetch('http://localhost:5000/list', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(newUser)
+            
+        })
