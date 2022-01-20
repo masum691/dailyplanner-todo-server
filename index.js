@@ -19,14 +19,14 @@ async function run() {
         const todoCollection = database.collection("todo_planner");
 
         // get api
-        app.get('/mytodo', async(req, res) => {
+        app.get('/mytodo', async (req, res) => {
             const cursor = todoCollection.find({})
             const todo = await cursor.toArray();
             res.send(todo);
         })
 
         // post api
-        app.post('/mytodo', async(req, res) => {
+        app.post('/mytodo', async (req, res) => {
             const newList = req.body;
             // console.log(newList)
             const result = await todoCollection.insertOne(newList)
@@ -34,8 +34,32 @@ async function run() {
             res.json(result)
         })
 
+        // display single data for update
+        app.get('/mytodo/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const singleUpdate = await todoCollection.findOne(query)
+            res.send(singleUpdate)
+        })
+
+        // update api
+        app.put('/mytodo/:id', async (req, res) => {
+            const id = req.params.id;
+            const upList = req.body;
+            const filter = { _id: ObjectId(id) }
+            // const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    name: upList.name,
+                    email: upList.email
+                },
+            };
+            const result = await todoCollection.updateOne(filter, updateDoc);
+            res.json(result);
+        })
+
         // delete api
-        app.delete('/mytodo/:id', async(req, res) => {
+        app.delete('/mytodo/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await todoCollection.deleteOne(query);

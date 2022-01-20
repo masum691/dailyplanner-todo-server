@@ -1,5 +1,6 @@
 crud - create, read, update, delete
 ------------------------------------------------------------
+------------------------------------------------------------
 
 create = insertOne, insertMany = post
 
@@ -23,7 +24,12 @@ fetch('http://localhost:5000/list', {
     body: JSON.stringify(newUser)
     })
 
+
+
 ----------------------------------------------------------------
+----------------------------------------------------------------
+
+
 
 read = findOne, findMany = get
 
@@ -44,11 +50,101 @@ useEffect( () => {
     .then(res => res.json())
     .then(data => setLists(data))
 }, [])
---------------------------------------------------------------
 
-update = 
 
 --------------------------------------------------------------
+--------------------------------------------------------------
+
+
+update = put
+
+update korar jonno data gula k specific id diye ui te show korte hobe. er jonno backend a get api korte hobe/ update korar jonno o ui te data dekhate hobe
+
+example: 
+app.get('/mytodo/:id', async(req,res) => {
+    const id = req.params.id;
+    const query = {_id: ObjectId(id)}
+    const singleUpdate = await todoCollection.findO(query)
+    res.send(singleUpdate)
+})
+
+
+update server 
+------------
+app.put('/mytodo/:id', async (req, res) => {
+    const id = req.params.id;
+    const upList = req.body;
+    const filter = { _id: ObjectId(id) }
+    // const options = { upsert: true };
+    const updateDoc = {
+        $set: {
+            name: upList.name,
+            email: upList.email
+        },
+    };
+    const result = await todoCollection.updateO(filter, updateDoc);
+    res.json(result);
+})
+
+update client 
+------------
+app.js
+<Route path="/update/:id">
+    <UpdateList></UpdateList>
+</Route>
+````
+
+const [uList, setUlist] = useState({})
+
+const handleName = e => {
+        const updateName = e.target.value;
+        const updateNm = {name: updateName, email: uList.email}
+        setUlist(updateNm)
+    }
+    const handleEmail = e => {
+        const updateEmail = e.target.value;
+        const updateEm = {email: updateEmail, name: uList.name}
+        setUlist(updateEm)
+    }
+    const handleUpdateSubmit = e => {
+        const url = `http://localhost:5000/mytodo/${id}`;
+        fetch(url, {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(uList)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.modifiedCount > 0){
+                alert('Updated successfully')
+                setUlist({})
+            }
+        })
+        e.preventDefault();
+    }
+
+return (
+        <div>
+            <Navbar></Navbar>
+            <h1>This is update</h1>
+            <h6> Update this one : {uList.name}</h6>
+            <h5>{id}</h5>
+
+            <form onSubmit={handleUpdateSubmit}>
+                <input type="text" onChange={handleName} value={uList.name || ''} />
+                <input type="email" onChange={handleEmail} value={uList.email || ''} />
+                <input type="submit" value="Update" />
+            </form>
+        </div>
+    );
+
+
+--------------------------------------------------------------
+--------------------------------------------------------------
+
+
 
 delete = deleteOne , deleteMany = delete
 
@@ -56,3 +152,35 @@ delete = deleteOne , deleteMany = delete
 const ObjectId = require('mongodb').ObjectId;
 
 method: 'DELETE' dilei hobe jodi body te information na dewa hoy
+
+* delete server 
+--------------
+app.delete('/mytodo/:id', async(req, res) => {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) }
+    const result = await todoCollection.deleteOne(query);
+    res.json(result)
+})
+
+* delete client
+--------------
+const [lists, setLists] = useState([]);
+
+const handleDeleteList = id => {
+    const proceed = window.confirm('Are you sure want todelete?')
+    if (proceed) {
+        fetch(`http://localhost:5000/mytodo/${id}`, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.deletedCount > 0) {
+                    alert('deleted successfully')
+                    const remainList = lists.filter(lists =>lists._id !== id)
+                    setLists(remainList)
+                }
+            })
+    }
+}
+----- delete button
+<button onClick={() => handleDeleteList(list._id)}>delete</button>
