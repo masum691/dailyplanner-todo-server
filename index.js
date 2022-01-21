@@ -47,11 +47,10 @@ async function run() {
             const id = req.params.id;
             const upList = req.body;
             const filter = { _id: ObjectId(id) }
-            // const options = { upsert: true };
             const updateDoc = {
                 $set: {
                     name: upList.name,
-                    email: upList.email
+                    time: upList.time
                 },
             };
             const result = await todoCollection.updateOne(filter, updateDoc);
